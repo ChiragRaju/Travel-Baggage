@@ -1,74 +1,47 @@
-const ItemDetails = [
-  {
-    id: 1,
-    description: "passport",
-    quantity: 2,
-    packed: false,
-  },
-  {
-    id: 2,
-    description: "passport",
-    quantity: 3,
-    packed: true,
-  },
-];
+import { useState } from "react";
+import Logo from "./Logo";
+import Form from "./Form";
+import PackingList from "./PackingList";
+import Stats from "./Stats";
 
 export default function App() {
-  return (
-    <div className="App">
-      <Logo />
-      <Form />
-      <PackingList />
-      <Stats />
-    </div>
-  );
-}
+  const [items, setItems] = useState([]);
 
-function Logo() {
-  return <h1>Nanna Yatra ❤🧡</h1>;
-}
-function Form() {
+  function handleAddItems(item) {
+    setItems((items) => [...items, item]);
+  }
+
+  function handleDeleteItem(id) {
+    setItems((items) => items.filter((item) => item.id !== id));
+  }
+
+  function handleToggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
+
+  function handleClearList() {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete all items?"
+    );
+
+    if (confirmed) setItems([]);
+  }
+
   return (
-    <form className="add-form">
-      <h3>What do you need for your trip</h3>
-      <select>
-        {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-          <option value={num} key={num}>
-            {num}
-          </option>
-        ))}
-      </select>
-      <input type="text" placeholder="item" />
-      <button>Add</button>
-    </form>
-  );
-}
-function PackingList() {
-  return (
-    <div className="list">
-      <ul>
-        {ItemDetails.map((item) => (
-          <Item item={item} key={item.id} />
-        ))}
-      </ul>
+    <div className="app">
+      <Logo />
+      <Form onAddItems={handleAddItems} />
+      <PackingList
+        items={items}
+        onDeleteItem={handleDeleteItem}
+        onToggleItem={handleToggleItem}
+        onClearList={handleClearList}
+      />
+      <Stats items={items} />
     </div>
-  );
-}
-function Item({ item }) {
-  return (
-    <li>
-      <span style={item.packed ? { textDecoration: "line-through" } : {}}>
-        {item.quantity}
-        {item.description}
-      </span>
-      <button>👎</button>
-    </li>
-  );
-}
-function Stats() {
-  return (
-    <footer className="stats">
-      <em>You have</em>
-    </footer>
   );
 }
